@@ -29,14 +29,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Login extends AppCompatActivity {
-
+    // layout items
     private Button loginButton;
-    private String adminUsername = "Shorino";
-    private String adminPassword = "qwertyuiop";
     private EditText username, password;
 
-    private boolean validLogin = false;
+    // variables
+    private String adminUsername = "Shorino";
+    private String adminPassword = "qwertyuiop";
     private String URL_SAVE = "https://bait2073equeue.000webhostapp.com/insert_account.php";
+    private int loginStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,12 +62,16 @@ public class Login extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!login()) {
+                loginStatus = login();
+                if(loginStatus != 0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
 
                     builder.setCancelable(true);
                     builder.setTitle("Invalid Login!");
-                    builder.setMessage("Wrong username or password, or perhaps you haven't create an account yet?");
+                    if(loginStatus == 1)
+                        builder.setMessage("Blank information aren't allowed, please type again.");
+                    else
+                        builder.setMessage("Wrong Username and Password.");
 
                     builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
                         @Override
@@ -111,54 +117,13 @@ public class Login extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public boolean login(){
+    public int login(){
         if(username.getText().toString().equals(adminUsername) && password.getText().toString().equals(adminPassword)){
-            try {
-                StringRequest postRequest = new StringRequest(
-                        Request.Method.POST,
-                        URL_SAVE,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                JSONObject jsonObject;
-                                try {
-                                    jsonObject = new JSONObject(response);
-                                    int success = jsonObject.getInt("success");
-                                    String message = jsonObject.getString("message");
-                                }
-                                catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(getApplicationContext(), "Error. " + error.toString(), Toast.LENGTH_LONG).show();
-                            }
-                        }) {
-                    @Override
-                    protected Map<String, String> getParams() {
-                        Map<String, String> params = new HashMap<>();
-                        //params.put("Username", //Username);
-                        //params.put("Password", //Password);
-                        return params;
-                    }
+            return 0; // login successful
+        } else if(username.getText().toString().isEmpty() || password.getText().toString().isEmpty()){
+            return 1; // blank info
+        }
 
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("Content-Type", "application/x-www-form-urlencoded");
-                        return params;
-                    }
-                };
-                NetworkCalls.getInstance().addToRequestQueue(postRequest);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return true;
-        } else
-            return false;
+        return 2; //wrong info
     }
 }

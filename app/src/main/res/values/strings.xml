@@ -9,7 +9,8 @@
     <string name="register"><a href="http://www.google.com">Click here to Register</a></string>
     <string name="title_activity_register">Register</string>
     <string name="registration">Registration</string>
-    <string name="termAndCondition">I have read and agree with the Term and Condition.</string>
+    <string name="termAndCondition">I have read and agree with the</string>
+    <string name="termAndCondition2"><a href="http://www.google.com">Term and Condition</a></string>
     <string name="title_activity_home">Home</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
