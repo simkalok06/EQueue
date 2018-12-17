@@ -140,8 +140,8 @@ public class Login extends AppCompatActivity {
                     @Override
                     protected Map<String, String> getParams() {
                         Map<String, String> params = new HashMap<>();
-                        params.put("Username", //Username);
-                        params.put("Password", //Password);
+                        //params.put("Username", //Username);
+                        //params.put("Password", //Password);
                         return params;
                     }
 
