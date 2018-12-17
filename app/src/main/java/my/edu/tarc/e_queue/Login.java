@@ -15,14 +15,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Login extends AppCompatActivity {
 
     private Button loginButton;
     private String adminUsername = "Shorino";
     private String adminPassword = "qwertyuiop";
     private EditText username, password;
-    private boolean validLogin = false;
 
+    private boolean validLogin = false;
+    private String URL_SAVE = "https://bait2073equeue.000webhostapp.com/insert_account.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +79,9 @@ public class Login extends AppCompatActivity {
                 }
             }
         });
+
+        // create a network connection from app to website
+        NetworkCalls.getInstance().setContext(getApplicationContext());
     }
 
     @Override
@@ -96,6 +113,50 @@ public class Login extends AppCompatActivity {
 
     public boolean login(){
         if(username.getText().toString().equals(adminUsername) && password.getText().toString().equals(adminPassword)){
+            try {
+                StringRequest postRequest = new StringRequest(
+                        Request.Method.POST,
+                        URL_SAVE,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                JSONObject jsonObject;
+                                try {
+                                    jsonObject = new JSONObject(response);
+                                    int success = jsonObject.getInt("success");
+                                    String message = jsonObject.getString("message");
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(getApplicationContext(), "Error. " + error.toString(), Toast.LENGTH_LONG).show();
+                            }
+                        }) {
+                    @Override
+                    protected Map<String, String> getParams() {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("Username", //Username);
+                        params.put("Password", //Password);
+                        return params;
+                    }
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("Content-Type", "application/x-www-form-urlencoded");
+                        return params;
+                    }
+                };
+                NetworkCalls.getInstance().addToRequestQueue(postRequest);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return true;
         } else
             return false;
