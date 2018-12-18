@@ -19,9 +19,11 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,8 +38,9 @@ public class Login extends AppCompatActivity {
     // variables
     private String adminUsername = "Shorino";
     private String adminPassword = "qwertyuiop";
-    private String URL_SAVE = "https://bait2073equeue.000webhostapp.com/insert_account.php";
+    private String usernameServer, passwordServer;
     private int loginStatus;
+    private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_account_where.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,27 +65,58 @@ public class Login extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginStatus = login();
-                if(loginStatus != 0) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
 
-                    builder.setCancelable(true);
-                    builder.setTitle("Invalid Login!");
-                    if(loginStatus == 1)
-                        builder.setMessage("Blank information aren't allowed, please type again.");
-                    else
-                        builder.setMessage("Wrong Username and Password.");
 
-                    builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
+                // retrieve data from server
+                JsonArrayRequest jsonObjectRequest;
+                jsonObjectRequest = new JsonArrayRequest(GET_URL+"?Username="+username.getText().toString(),
+                new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject accountDetail = (JSONObject) response.get(i);
+                                usernameServer = accountDetail.getString("Username");
+                                passwordServer = accountDetail.getString("Password");
+                            }
+
+                            loginStatus = loginValidation();
+
+                            if(loginStatus != 0){
+                                AlertDialog.Builder builder = new AlertDialog.Builder(Login.this);
+
+                                builder.setCancelable(true);
+                                builder.setTitle("Invalid Login!");
+                                if(loginStatus == 1)
+                                    builder.setMessage("Blank information aren't allowed, please type again.");
+                                else
+                                    builder.setMessage("Wrong Username and Password.");
+
+                                builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.cancel();
+                                    }
+                                    });
+                                builder.show();
+                            }else{
+                                // display login successful message to user
+                                Toast.makeText(Login.this,"Login Successful!", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
-                    });
-                    builder.show();
-                }else{
-                    Toast.makeText(Login.this,"Login Successful!", Toast.LENGTH_SHORT).show();
-                }
+                    }
+                },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                Toast.makeText(getApplicationContext(), "Error: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                // Add the request to the RequestQueue.
+                NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
             }
         });
 
@@ -117,8 +151,10 @@ public class Login extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public int login(){
+    public int loginValidation(){
         if(username.getText().toString().equals(adminUsername) && password.getText().toString().equals(adminPassword)){
+            return 0; // login successful
+        } else if(username.getText().toString().equals(usernameServer) && password.getText().toString().equals(passwordServer)){
             return 0; // login successful
         } else if(username.getText().toString().isEmpty() || password.getText().toString().isEmpty()){
             return 1; // blank info

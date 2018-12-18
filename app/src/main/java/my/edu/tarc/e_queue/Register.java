@@ -11,6 +11,18 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Register extends AppCompatActivity {
     // layout items
     private Button registerButton;
@@ -19,6 +31,7 @@ public class Register extends AppCompatActivity {
 
     // variables
     private int registerStatus;
+    private String URL_SAVE = "https://bait2073equeue.000webhostapp.com/insert_account.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +44,12 @@ public class Register extends AppCompatActivity {
         confirmPassword = findViewById(R.id.editTextConfirmPassword);
         termAndCondition = findViewById(R.id.checkBoxTermAndCondition);
 
+
+
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                registerStatus = register();
+                registerStatus = registerValidation();
 
                 // invalid registration
                 if(registerStatus != 0){
@@ -58,13 +73,60 @@ public class Register extends AppCompatActivity {
                     });
                     builder.show();
                 }else{
-                    Toast.makeText(Register.this,"Register Successful!", Toast.LENGTH_SHORT).show();
+
+
+                    // write data into server
+                    try {
+                        StringRequest postRequest = new StringRequest(Request.Method.POST, URL_SAVE, new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        JSONObject jsonObject;
+                                        try {
+                                            jsonObject = new JSONObject(response);
+                                            int success = jsonObject.getInt("success");
+                                            String message = jsonObject.getString("message");
+                                        }
+                                        catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Toast.makeText(getApplicationContext(), "Error: " + error.toString(), Toast.LENGTH_LONG).show();
+                                    }
+                                }) {
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> params;
+                                params = new HashMap<>();
+                                params.put("Username", username.getText().toString());
+                                params.put("Password", password.getText().toString());
+
+                                // display register successful to user
+                                Toast.makeText(Register.this,"Register Successful!", Toast.LENGTH_SHORT).show();
+
+                                return params;
+                            }
+
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("Content-Type", "application/x-www-form-urlencoded");
+                                return params;
+                            }
+                        };
+                        NetworkCalls.getInstance().addToRequestQueue(postRequest);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
     }
 
-    public int register(){
+    public int registerValidation(){
         if(password.getText().toString().isEmpty() || confirmPassword.getText().toString().isEmpty() || username.getText().toString().isEmpty()){
             return 1; // blank info
         }else if(!password.getText().toString().equals(confirmPassword.getText().toString())) {
