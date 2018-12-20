@@ -1,5 +1,6 @@
 package my.edu.tarc.e_queue;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ public class Login extends AppCompatActivity {
     private String usernameServer, passwordServer;
     private int loginStatus;
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_account_where.php";
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +67,17 @@ public class Login extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                progressDialog = new ProgressDialog(Login.this);
+                progressDialog.setMessage("Loading..."); // Setting Message
+                progressDialog.setTitle("Login"); // Setting Title
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+                progressDialog.show(); // Display Progress Dialog
+                progressDialog.setCancelable(false);
 
                 // retrieve data from server
                 JsonArrayRequest jsonObjectRequest;
                 jsonObjectRequest = new JsonArrayRequest(GET_URL+"?Username="+username.getText().toString(),
                 new Response.Listener<JSONArray>() {
-
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
@@ -80,6 +86,8 @@ public class Login extends AppCompatActivity {
                                 usernameServer = accountDetail.getString("Username");
                                 passwordServer = accountDetail.getString("Password");
                             }
+                            progressDialog.dismiss();
+
 
                             loginStatus = loginValidation();
 
@@ -90,8 +98,10 @@ public class Login extends AppCompatActivity {
                                 builder.setTitle("Invalid Login!");
                                 if(loginStatus == 1)
                                     builder.setMessage("Blank information aren't allowed, please type again.");
-                                else
-                                    builder.setMessage("Wrong Username and Password.");
+                                else if(loginStatus == 2)
+                                    builder.setMessage("Username doesn't exist. Perhaps you haven't register an account yet?");
+                                else if(loginStatus == 3)
+                                    builder.setMessage("Incorrect password.");
 
                                 builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
                                         @Override
@@ -158,6 +168,10 @@ public class Login extends AppCompatActivity {
             return 0; // login successful
         } else if(username.getText().toString().isEmpty() || password.getText().toString().isEmpty()){
             return 1; // blank info
+        } else if(!username.getText().toString().equals(usernameServer)){
+            return 2; // username doesn't exist
+        } else if(!password.getText().toString().equals(passwordServer)){
+            return 3; // password mismatch
         }
 
         return 2; //wrong info
