@@ -70,6 +70,8 @@ public class Register extends AppCompatActivity {
                     //    builder.setMessage("This username has existed, please use other username.");
                     else if(registerStatus == 5)
                         builder.setMessage("Password length must be 8 characters or above.");
+                    else if(registerStatus == 6)
+                        builder.setMessage("Username can't contain space characters.");
 
                     builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
                         @Override
@@ -103,6 +105,8 @@ public class Register extends AppCompatActivity {
                                             if(success == 1) {
                                                 // display register successful to user
                                                 Toast.makeText(Register.this, message, Toast.LENGTH_SHORT).show();
+                                                Home.finalUsername = username.getText().toString();
+                                                openHomeActivity();
                                             }else{
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(Register.this);
 
@@ -156,7 +160,13 @@ public class Register extends AppCompatActivity {
             }
         });
     }
-
+    private boolean hasSpace(String string){
+        for(int i = 0; i < string.length(); i++){
+            if(string.charAt(i) == ' ')
+                return true;
+        }
+        return false;
+    }
     public int registerValidation() {
         if (password.getText().toString().isEmpty() || confirmPassword.getText().toString().isEmpty() || username.getText().toString().isEmpty()) {
             return 1; // blank info
@@ -165,13 +175,18 @@ public class Register extends AppCompatActivity {
         } else if (!termAndCondition.isChecked()) {
             return 3; // t&c is not checked
         } else if (password.getText().toString().length() < 8){
-            return 5;
+            return 5; // password less than 8 chars
+        } else if (hasSpace(username.getText().toString())){
+            return 6; // username has space
         }
         return 0; // register successful
     }
-
     public void openTermActivity(View view){
         Intent intent = new Intent(this, TermAndCondition.class);
+        startActivity(intent);
+    }
+    public void openHomeActivity(){
+        Intent intent = new Intent(this, Home.class);
         startActivity(intent);
     }
 }

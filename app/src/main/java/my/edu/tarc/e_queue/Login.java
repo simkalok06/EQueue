@@ -51,15 +51,6 @@ public class Login extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         loginButton = findViewById(R.id.buttonLogin);
         username = findViewById(R.id.editTextUsername);
         password = findViewById(R.id.editTextPassword);
@@ -113,6 +104,8 @@ public class Login extends AppCompatActivity {
                             }else{
                                 // display login successful message to user
                                 Toast.makeText(Login.this,"Login Successful!", Toast.LENGTH_SHORT).show();
+                                Home.finalUsername = username.getText().toString();
+                                openHomeActivity();
                             }
                         } catch (Exception e) {
                             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -158,6 +151,11 @@ public class Login extends AppCompatActivity {
 
     public void openRegisterActivity(View view){
         Intent intent = new Intent(this, Register.class);
+        startActivity(intent);
+    }
+
+    public void openHomeActivity(){
+        Intent intent = new Intent(this, Home.class);
         startActivity(intent);
     }
 
