@@ -186,6 +186,7 @@ public class Register extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();

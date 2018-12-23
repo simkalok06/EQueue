@@ -18,9 +18,9 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="pref_file"/>
-    <string name="name">Name</string>
-    <string name="address">Address</string>
-    <string name="phone">Phone</string>
+    <string name="name">Name:</string>
+    <string name="address">Address:</string>
+    <string name="phone">Phone:</string>
     <string name="description"></string>
     <string name="no_record">No record</string>
 </resources>

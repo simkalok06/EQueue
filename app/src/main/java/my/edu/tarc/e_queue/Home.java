@@ -1,7 +1,6 @@
 package my.edu.tarc.e_queue;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +27,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Vector;
+
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -31,11 +36,15 @@ public class Home extends AppCompatActivity
     private TextView TextViewUsername;
     private NavigationView navigationView;
     private View navHeaderView;
+    ListView listViewOrganization;
+    OrganizationAdapter adapter;
 
     // variables
     public static String finalUsername;
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
     private ProgressDialog  progressDialog;
+    private Vector<Organization> organizationList = new Vector<Organization>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +53,17 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // custom stuffs
         navigationView = findViewById(R.id.nav_view);
         navHeaderView =  navigationView.getHeaderView(0);
         TextViewUsername = navHeaderView.findViewById(R.id.textViewUsername);
         TextViewUsername.setText(finalUsername);
+        listViewOrganization = findViewById(R.id.listView);
+        adapter = new OrganizationAdapter();
 
         retrieveDataFromServer();
 
+        // default method
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +81,7 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
     }
 
@@ -126,7 +140,9 @@ public class Home extends AppCompatActivity
         return true;
     }
 
+
     public void logout(View view){
+        organizationList.clear();
         finish();
     }
 
@@ -147,13 +163,17 @@ public class Home extends AppCompatActivity
                         try {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject OrganizationDetail = (JSONObject) response.get(i);
-                                Organization.id.add(OrganizationDetail.getInt("Id"));
-                                Organization.name.add(OrganizationDetail.getString("Name"));
-                                Organization.address.add(OrganizationDetail.getString("Address"));
-                                Organization.phone.add(OrganizationDetail.getString("Phone"));
-                                Organization.description.add(OrganizationDetail.getString("Description"));
+                                Organization serverData = new Organization(OrganizationDetail.getInt("Id"),
+                                        OrganizationDetail.getString("Name"),
+                                        OrganizationDetail.getString("Address"),
+                                        OrganizationDetail.getString("Phone"),
+                                        OrganizationDetail.getString("Description"));
+
+                                organizationList.add(serverData);
                             }
                             progressDialog.dismiss();
+
+                            listViewOrganization.setAdapter(adapter);
 
                         } catch (Exception e) {
                             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -168,5 +188,41 @@ public class Home extends AppCompatActivity
                 });
         // Add the request to the RequestQueue.
         NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
+    }
+
+    class OrganizationAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return organizationList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup parent) {
+            view = getLayoutInflater().inflate(R.layout.outlet_record,null);
+
+            ImageView imageViewLocation = view.findViewById(R.id.locationImageView);
+            TextView textViewName = view.findViewById(R.id.textViewNameData);
+            TextView textViewPhone = view.findViewById(R.id.textViewPhoneData);
+            TextView textViewAddress = view.findViewById(R.id.textViewAddressData);
+            TextView textViewDescription = view.findViewById(R.id.textViewDescriptionData);
+
+            textViewName.setText(organizationList.elementAt(position).name);
+            textViewPhone.setText(organizationList.elementAt(position).phone);
+            textViewAddress.setText(organizationList.elementAt(position).address);
+            textViewDescription.setText(organizationList.elementAt(position).description);
+
+            return view;
+        }
     }
 }
