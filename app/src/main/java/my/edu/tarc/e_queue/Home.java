@@ -15,6 +15,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -22,12 +30,12 @@ public class Home extends AppCompatActivity
     // layout items
     private TextView TextViewUsername;
     private NavigationView navigationView;
-    private View  navHeaderView;
+    private View navHeaderView;
 
     // variables
     public static String finalUsername;
-    public Organization organizationList = new Organization();
-
+    private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
+    private ProgressDialog  progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +49,7 @@ public class Home extends AppCompatActivity
         TextViewUsername = navHeaderView.findViewById(R.id.textViewUsername);
         TextViewUsername.setText(finalUsername);
 
-        organizationList.retrieveDataFromServer();
+        retrieveDataFromServer();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -120,5 +128,45 @@ public class Home extends AppCompatActivity
 
     public void logout(View view){
         finish();
+    }
+
+    public void retrieveDataFromServer() {
+        progressDialog = new ProgressDialog(Home.this);
+        progressDialog.setMessage("Loading..."); // Setting Message
+        progressDialog.setTitle("Retrieving Data"); // Setting Title
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialog.show(); // Display Progress Dialog
+        progressDialog.setCancelable(false);
+
+        // retrieve data from server
+        JsonArrayRequest jsonObjectRequest;
+        jsonObjectRequest = new JsonArrayRequest(GET_URL + "?Id=",
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject OrganizationDetail = (JSONObject) response.get(i);
+                                Organization.id.add(OrganizationDetail.getInt("Id"));
+                                Organization.name.add(OrganizationDetail.getString("Name"));
+                                Organization.address.add(OrganizationDetail.getString("Address"));
+                                Organization.phone.add(OrganizationDetail.getString("Phone"));
+                                Organization.description.add(OrganizationDetail.getString("Description"));
+                            }
+                            progressDialog.dismiss();
+
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Toast.makeText(getApplicationContext(), "Error: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+        // Add the request to the RequestQueue.
+        NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 }
