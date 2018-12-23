@@ -36,14 +36,15 @@ public class Home extends AppCompatActivity
     private TextView TextViewUsername;
     private NavigationView navigationView;
     private View navHeaderView;
-    ListView listViewOrganization;
-    OrganizationAdapter adapter;
+    public static ListView listViewOrganization;
+    private OrganizationAdapter adapter;
 
     // variables
     public static String finalUsername;
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
+    private String GET_URL2 = "https://bait2073equeue.000webhostapp.com/update_queue.php";
     private ProgressDialog  progressDialog;
-    private Vector<Organization> organizationList = new Vector<Organization>();
+    public static Vector<Organization> organizationList = new Vector<Organization>();
 
 
     @Override
@@ -167,7 +168,9 @@ public class Home extends AppCompatActivity
                                         OrganizationDetail.getString("Name"),
                                         OrganizationDetail.getString("Address"),
                                         OrganizationDetail.getString("Phone"),
-                                        OrganizationDetail.getString("Description"));
+                                        OrganizationDetail.getString("Description"),
+                                        OrganizationDetail.getInt("QNumber"),
+                                        OrganizationDetail.getDouble("TimePerCust"));
 
                                 organizationList.add(serverData);
                             }
@@ -190,6 +193,25 @@ public class Home extends AppCompatActivity
         NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
+/*  Yap Jun, this is the part where i need to update queue number to server based on which position of the data, currently still not yet working
+
+    public void updateQueueNumber(int position){
+        JsonArrayRequest jsonObjectRequest;
+        jsonObjectRequest = new JsonArrayRequest(GET_URL2+"?QNumber="+Home.organizationList.elementAt(position).qNumber WHERE "?Id="+position,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Toast.makeText(getApplicationContext(), "Error: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+*/
     class OrganizationAdapter extends BaseAdapter{
 
         @Override
@@ -211,7 +233,7 @@ public class Home extends AppCompatActivity
         public View getView(int position, View view, ViewGroup parent) {
             view = getLayoutInflater().inflate(R.layout.outlet_record,null);
 
-            ImageView imageViewLocation = view.findViewById(R.id.locationImageView);
+            //ImageView imageViewLocation = view.findViewById(R.id.locationImageView);
             TextView textViewName = view.findViewById(R.id.textViewNameData);
             TextView textViewPhone = view.findViewById(R.id.textViewPhoneData);
             TextView textViewAddress = view.findViewById(R.id.textViewAddressData);
