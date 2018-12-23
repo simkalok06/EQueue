@@ -1,9 +1,11 @@
 package my.edu.tarc.e_queue;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -141,7 +143,6 @@ public class Home extends AppCompatActivity
         return true;
     }
 
-
     public void logout(View view){
         organizationList.clear();
         finish();
@@ -193,25 +194,41 @@ public class Home extends AppCompatActivity
         NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
-/*  Yap Jun, this is the part where i need to update queue number to server based on which position of the data, currently still not yet working
-
     public void updateQueueNumber(int position){
         JsonArrayRequest jsonObjectRequest;
-        jsonObjectRequest = new JsonArrayRequest(GET_URL2+"?QNumber="+Home.organizationList.elementAt(position).qNumber WHERE "?Id="+position,
+        jsonObjectRequest = new JsonArrayRequest(GET_URL2+"?QNumber="+organizationList.elementAt(position).qNumber + "&Id="+position,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                        try {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
 
+                            builder.setCancelable(true);
+                            builder.setTitle("Queue Successful!");
+                            builder.setMessage(" ");
+                            builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                            builder.show();
+
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Toast.makeText(getApplicationContext(), "Error: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "Error: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
+        // Add the request to the RequestQueue.
+        NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
     }
-*/
+
     class OrganizationAdapter extends BaseAdapter{
 
         @Override
