@@ -22,7 +22,7 @@ public class Home extends AppCompatActivity
     // layout items
     private TextView TextViewUsername;
     private NavigationView navigationView;
-    private View  navHeaderView;
+    private View navHeaderView;
 
     // variables
     public static String finalUsername;
