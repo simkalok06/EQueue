@@ -96,6 +96,8 @@ public class Home extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+        organizationList.clear();
+        finish();
     }
 
     @Override
