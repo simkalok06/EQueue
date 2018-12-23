@@ -1,5 +1,6 @@
 package my.edu.tarc.e_queue;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +26,8 @@ public class Home extends AppCompatActivity
 
     // variables
     public static String finalUsername;
+    public Organization organizationList = new Organization();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class Home extends AppCompatActivity
         TextViewUsername = navHeaderView.findViewById(R.id.textViewUsername);
         TextViewUsername.setText(finalUsername);
 
+        organizationList.retrieveDataFromServer();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +102,7 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_trackQueue) {
-            // Handle the camera action
+
         } else if (id == R.id.nav_history) {
 
         } else if (id == R.id.nav_favorite) {

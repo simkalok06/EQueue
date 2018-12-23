@@ -3,6 +3,7 @@ package my.edu.tarc.e_queue;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class Register extends AppCompatActivity {
     private int registerStatus;
     private String URL_SAVE = "https://bait2073equeue.000webhostapp.com/insert_account.php";
     private ProgressDialog progressDialog;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,7 @@ public class Register extends AppCompatActivity {
 
                 // invalid registration
                 if(registerStatus != 0){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Register.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
 
                     builder.setCancelable(true);
                     builder.setTitle("Invalid Registration!");
@@ -66,12 +68,8 @@ public class Register extends AppCompatActivity {
                         builder.setMessage("Blank information aren't allowed.");
                     else if(registerStatus == 3)
                         builder.setMessage("You have to agree with the Term & Condition before proceed to register.");
-                    //else if(registerStatus == 4)
-                    //    builder.setMessage("This username has existed, please use other username.");
-                    else if(registerStatus == 5)
+                    else if(registerStatus == 4)
                         builder.setMessage("Password length must be 8 characters or above.");
-                    else if(registerStatus == 6)
-                        builder.setMessage("Username can't contain space characters.");
 
                     builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
                         @Override
@@ -175,9 +173,7 @@ public class Register extends AppCompatActivity {
         } else if (!termAndCondition.isChecked()) {
             return 3; // t&c is not checked
         } else if (password.getText().toString().length() < 8){
-            return 5; // password less than 8 chars
-        } else if (hasSpace(username.getText().toString())){
-            return 6; // username has space
+            return 4; // password less than 8 chars
         }
         return 0; // register successful
     }
@@ -189,4 +185,41 @@ public class Register extends AppCompatActivity {
         Intent intent = new Intent(this, Home.class);
         startActivity(intent);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // TODO read shared preferences file
+        sharedPreferences = getSharedPreferences(getString(R.string.pref_file), MODE_PRIVATE);
+
+        String usernameEditText,passwordEditText,confirmedPasswordEditText;
+
+        usernameEditText = sharedPreferences.getString("username", "");
+        passwordEditText = sharedPreferences.getString("password", "");
+        confirmedPasswordEditText = sharedPreferences.getString("confirmedPassword", "");
+
+        username.setText(usernameEditText);
+        password.setText(passwordEditText);
+        confirmPassword.setText(confirmedPasswordEditText);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        String usernameET, passwordET, confirmedPasswordET;
+
+        usernameET = username.getText().toString();
+        passwordET = password.getText().toString();
+        confirmedPasswordET = confirmPassword.getText().toString();
+
+        editor.putString("username",usernameET);
+        editor.putString("password",passwordET);
+        editor.putString("confirmedPassword", confirmedPasswordET);
+
+        editor.apply();
+    }
+
+
 }
