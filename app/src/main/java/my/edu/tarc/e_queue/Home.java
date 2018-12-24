@@ -2,6 +2,7 @@ package my.edu.tarc.e_queue;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -64,6 +66,14 @@ public class Home extends AppCompatActivity
         listViewOrganization = findViewById(R.id.listView);
         adapter = new OrganizationAdapter();
 
+        listViewOrganization.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //go to organization activity
+                openOrganizationActivity(position);
+            }
+        });
+
         retrieveDataFromServer();
 
         // default method
@@ -86,6 +96,20 @@ public class Home extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+    }
+
+    public void openOrganizationActivity(int position){
+        //get the item that user selected
+        //int test = listViewOrganization.getSelectedItemPosition();
+        //a bundle object(like a struct) to store info to send to another activity
+        Bundle organizationExtras = new Bundle();
+        organizationExtras.putInt("ORGANIZATION_ID",position);
+
+        Intent intent = new Intent(this, OrganizationActivity.class);
+
+        intent.putExtras(organizationExtras);
+
+        startActivity(intent);
     }
 
     @Override

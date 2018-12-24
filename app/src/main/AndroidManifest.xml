@@ -34,6 +34,10 @@
             android:name=".TermAndCondition"
             android:label="Term and Condition"
             android:parentActivityName=".Register" />
+        <activity
+            android:name=".OrganizationActivity"
+            android:label="Queue"
+            android:parentActivityName=".Home"></activity>
     </application>
 
 </manifest>
