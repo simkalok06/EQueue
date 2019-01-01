@@ -46,9 +46,10 @@ public class Home extends AppCompatActivity
     // variables
     public static String finalUsername;
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
-    private String GET_URL2 = "https://bait2073equeue.000webhostapp.com/update_queue.php";
     private ProgressDialog  progressDialog;
     public static Vector<Organization> organizationList = new Vector<Organization>();
+    public static Vector<TrackQueueData> trackQueue = new Vector<TrackQueueData>();
+    public static int[] images = {R.drawable.dentist, R.drawable.massage, R.drawable.bank};
 
 
     @Override
@@ -104,12 +105,11 @@ public class Home extends AppCompatActivity
         //a bundle object(like a struct) to store info to send to another activity
         Bundle organizationExtras = new Bundle();
         organizationExtras.putInt("ORGANIZATION_ID",position);
-
         Intent intent = new Intent(this, OrganizationActivity.class);
-
         intent.putExtras(organizationExtras);
-
         startActivity(intent);
+
+        //update queue number
     }
 
     @Override
@@ -120,7 +120,6 @@ public class Home extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-        organizationList.clear();
         finish();
     }
 
@@ -175,6 +174,7 @@ public class Home extends AppCompatActivity
     }
 
     public void retrieveDataFromServer() {
+        organizationList.clear();
         progressDialog = new ProgressDialog(Home.this);
         progressDialog.setMessage("Loading..."); // Setting Message
         progressDialog.setTitle("Retrieving Data"); // Setting Title
@@ -214,41 +214,6 @@ public class Home extends AppCompatActivity
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         Toast.makeText(getApplicationContext(), "Error: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-        // Add the request to the RequestQueue.
-        NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
-    }
-
-    public void updateQueueNumber(int position){
-        JsonArrayRequest jsonObjectRequest;
-        jsonObjectRequest = new JsonArrayRequest(GET_URL2+"?QNumber="+organizationList.elementAt(position).qNumber + "&Id="+position,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
-
-                            builder.setCancelable(true);
-                            builder.setTitle("Queue Successful!");
-                            builder.setMessage(" ");
-                            builder.setNegativeButton("Okay", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            });
-                            builder.show();
-
-                        } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        //Toast.makeText(getApplicationContext(), "Error: " + volleyError.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
         // Add the request to the RequestQueue.

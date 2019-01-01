@@ -1,15 +1,12 @@
 package my.edu.tarc.e_queue;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,20 +19,18 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Queue;
+
 import static my.edu.tarc.e_queue.Home.listViewOrganization;
 import static my.edu.tarc.e_queue.Home.organizationList;
 import static my.edu.tarc.e_queue.Home.trackQueue;
 
-public class OrganizationActivity extends AppCompatActivity {
-
+public class QueueActivity extends AppCompatActivity {
     // layout items
-    private TextView TextViewOrganizationName;
-    private TextView TextViewOrganizationPhone;
-    private TextView TextViewOrganizationDescription;
-    private TextView TextViewOrganizationAddress;
-    private TextView TextViewWaitTime;
-    private TextView TextViewQueued;
-    private Button ButtonQueue;
+    private TextView TextViewOrganizationName2;
+    private TextView TextViewWaitTime2;
+    private TextView TextViewQueued2;
+    private TextView TextViewQPosition;
 
     // variables
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
@@ -43,38 +38,24 @@ public class OrganizationActivity extends AppCompatActivity {
     private ProgressDialog  progressDialog;
     int organization_index;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_organization);
+        setContentView(R.layout.activity_queue);
 
-        TextViewOrganizationName = findViewById(R.id.textViewOrganizationName);
-        TextViewOrganizationPhone = findViewById(R.id.textViewOrganizationPhone);
-        TextViewOrganizationDescription = findViewById(R.id.textViewOrganizationDescription);
-        TextViewOrganizationAddress = findViewById(R.id.textViewOrganizationAddress);
-        TextViewWaitTime = findViewById(R.id.textViewWaitTime);
-        TextViewQueued = findViewById(R.id.textViewQueued);
-        ButtonQueue = findViewById(R.id.buttonQueue);
+        TextViewOrganizationName2 = findViewById(R.id.textViewOrganizationName2);
+        TextViewWaitTime2 = findViewById(R.id.textViewWaitTime2);
+        TextViewQueued2 = findViewById(R.id.textViewQueued2);
+        TextViewQPosition = findViewById(R.id.textViewQPosition);
+
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        //show appropriate organization info based on which item user pressed
         organization_index = extras.getInt("ORGANIZATION_ID");
 
-        //organizationList.elementAt(organization_index).qNumber++;
-        //updateQueueNumber(organization_index);
-        TextViewOrganizationName.setText(organizationList.elementAt(organization_index).name);
-        TextViewOrganizationPhone.setText(organizationList.elementAt(organization_index).phone);
-        TextViewOrganizationDescription.setText(organizationList.elementAt(organization_index).description);
-        TextViewOrganizationAddress.setText(organizationList.elementAt(organization_index).address);
-        TextViewWaitTime.setText(calculateWaitTime(organization_index));
-        TextViewQueued.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        refresh();
+        TextViewOrganizationName2.setText(organizationList.elementAt(organization_index).name);
+        TextViewQueued2.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
+        TextViewWaitTime2.setText(calculateWaitTime(organization_index));
+        TextViewQueued2.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
     }
 
     public String calculateWaitTime(int position){
@@ -88,7 +69,7 @@ public class OrganizationActivity extends AppCompatActivity {
 
     public void refresh(){
         organizationList.clear();
-        progressDialog = new ProgressDialog(OrganizationActivity.this);
+        progressDialog = new ProgressDialog(QueueActivity.this);
         progressDialog.setMessage("Loading..."); // Setting Message
         progressDialog.setTitle("Retrieving Data"); // Setting Title
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
@@ -116,8 +97,8 @@ public class OrganizationActivity extends AppCompatActivity {
                             }
                             progressDialog.dismiss();
 
-                            TextViewWaitTime.setText(calculateWaitTime(organization_index));
-                            TextViewQueued.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
+                            TextViewWaitTime2.setText(calculateWaitTime(organization_index));
+                            TextViewQueued2.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
                             //listViewOrganization.setAdapter(adapter);
 
                         } catch (Exception e) {
@@ -133,8 +114,6 @@ public class OrganizationActivity extends AppCompatActivity {
                 });
         // Add the request to the RequestQueue.
         NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
-
-
     }
 
     public void updateQueueNumber(int position){
@@ -144,7 +123,7 @@ public class OrganizationActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(OrganizationActivity.this);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(QueueActivity.this);
 
                             builder.setCancelable(true);
                             builder.setTitle("Queue Successful!");
@@ -172,34 +151,18 @@ public class OrganizationActivity extends AppCompatActivity {
         NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
-    public void openQueueActivity(View view) {
-        TrackQueueData trackData = new TrackQueueData(organization_index, organizationList.elementAt(organization_index).qNumber+1);
-        boolean validate = true;
-        for(int i = 0; i < trackQueue.size();i++){
-            if(trackQueue.elementAt(i).position == organization_index){
-                Toast.makeText(getApplicationContext(), "You are already queuing for this!", Toast.LENGTH_SHORT).show();
-                validate = false;
-            }
-        }
-        if(validate){
-            Toast.makeText(getApplicationContext(), "Queue successful.", Toast.LENGTH_SHORT).show();
-            trackQueue.add(trackData);
-
-            // increment q number
-            organizationList.elementAt(organization_index).qNumber++;
-            updateQueueNumber(organization_index);
-
-            // call queue activity
-            Bundle queueExtras = new Bundle();
-            queueExtras.putInt("ORGANIZATION_ID", organization_index);
-            Intent intent2 = new Intent(this, QueueActivity.class);
-            intent2.putExtras(queueExtras);
-            startActivity(intent2);
-        }
-    }
-
     public void refreshButton(View view){
         refresh();
     }
 
+    public void cancelButton(View view){
+        organizationList.elementAt(organization_index).qNumber--;
+        updateQueueNumber(organization_index);
+        for(int i = 0; i<trackQueue.size();i++){
+            if(trackQueue.elementAt(i).position == organization_index){
+                trackQueue.remove(i);
+            }
+        }
+        finish();
+    }
 }

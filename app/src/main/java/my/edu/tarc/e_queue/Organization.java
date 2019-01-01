@@ -17,4 +17,6 @@ public class Organization {
         this.qNumber = qNumber;
         this.timePerCust = timePerCust;
     }
+
+
 }
