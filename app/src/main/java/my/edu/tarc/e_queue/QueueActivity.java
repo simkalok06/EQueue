@@ -57,6 +57,16 @@ public class QueueActivity extends AppCompatActivity {
         qrCode.setImageResource(R.drawable.qr);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
     public String calculateWaitTime(int position){
         float waittime = organizationList.elementAt(position).qNumber * (float)organizationList.elementAt(position).timePerCust;
         int waitMin = (int)waittime;
@@ -96,9 +106,20 @@ public class QueueActivity extends AppCompatActivity {
                             }
                             progressDialog.dismiss();
 
-                            // update number of people queuing and wait time to latest
-                            TextViewWaitTime2.setText(calculateWaitTime(trackQueue.elementAt(queueIndex).organization.ID));
-                            TextViewQueued2.setText(Integer.toString(organizationList.elementAt(trackQueue.elementAt(queueIndex).organization.ID).qNumber));
+                            // update number of people queuing, wait time, queue position to latest
+                            for(int i=0;i<organizationList.size();i++) {
+                                if(organizationList.elementAt(i).ID == trackQueue.elementAt(queueIndex).organization.ID)
+                                {
+                                    if(organizationList.elementAt(i).qNumber < trackQueue.elementAt(queueIndex).organization.qNumber)
+                                        trackQueue.elementAt(queueIndex).myQNumber -= trackQueue.elementAt(queueIndex).organization.qNumber - organizationList.elementAt(i).qNumber;
+                                    trackQueue.elementAt(queueIndex).organization.qNumber = organizationList.elementAt(i).qNumber;
+                                    // display
+                                    TextViewWaitTime2.setText(calculateWaitTime(trackQueue.elementAt(queueIndex).organization.ID));
+                                    TextViewQueued2.setText(Integer.toString(organizationList.elementAt(trackQueue.elementAt(queueIndex).organization.ID).qNumber));
+                                    TextViewQPosition.setText(Integer.toString(trackQueue.elementAt(queueIndex).myQNumber));
+
+                                }
+                            }
 
                         } catch (Exception e) {
                             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();

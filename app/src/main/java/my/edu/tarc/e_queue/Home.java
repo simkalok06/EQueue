@@ -48,10 +48,11 @@ public class Home extends AppCompatActivity
     public static String finalUsername;
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
     private ProgressDialog  progressDialog;
+    public static int[] images = {R.drawable.dentist, R.drawable.massage, R.drawable.bank};
     public static Vector<Organization> organizationList = new Vector<Organization>();
     public static Vector<TrackQueueData> trackQueue = new Vector<TrackQueueData>();
-    public static int[] images = {R.drawable.dentist, R.drawable.massage, R.drawable.bank};
-
+    public static Vector<Organization> historyList = new Vector<Organization>();
+    public static Vector<Organization> favoriteList = new Vector<Organization>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +97,6 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
     }
 
     public void openOrganizationActivity(int position){
@@ -156,9 +155,11 @@ public class Home extends AppCompatActivity
             Intent intent = new Intent(this, TrackYourQ.class);
             startActivity(intent);
         } else if (id == R.id.nav_history) {
-
+            Intent intent = new Intent(this, History.class);
+            startActivity(intent);
         } else if (id == R.id.nav_favorite) {
-
+            Intent intent = new Intent(this, Favorite.class);
+            startActivity(intent);
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_aboutUs) {

@@ -23,6 +23,8 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static my.edu.tarc.e_queue.Home.favoriteList;
+import static my.edu.tarc.e_queue.Home.historyList;
 import static my.edu.tarc.e_queue.Home.listViewOrganization;
 import static my.edu.tarc.e_queue.Home.organizationList;
 import static my.edu.tarc.e_queue.Home.trackQueue;
@@ -37,6 +39,7 @@ public class OrganizationActivity extends AppCompatActivity {
     private TextView TextViewWaitTime;
     private TextView TextViewQueued;
     private ImageView imageView;
+    private Button favoriteButton;
 
     // variables
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
@@ -57,6 +60,8 @@ public class OrganizationActivity extends AppCompatActivity {
         TextViewWaitTime = findViewById(R.id.textViewWaitTime);
         TextViewQueued = findViewById(R.id.textViewQueued);
         imageView = findViewById(R.id.imageView2);
+        favoriteButton = findViewById(R.id.buttonFavorite);
+
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         //show appropriate organization info based on which item user pressed
@@ -71,12 +76,28 @@ public class OrganizationActivity extends AppCompatActivity {
         TextViewWaitTime.setText(calculateWaitTime(organization_index));
         TextViewQueued.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
         imageView.setImageResource(Home.images[organization_index]);
+
+        updateFavoriteButton();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         refresh();
+    }
+
+    public void updateFavoriteButton(){
+        if(favoriteList.size() == 0){
+            favoriteButton.setText("Add to Favorite");
+        }
+        for(int i =0;i<favoriteList.size();i++) {
+            if (organization_index == favoriteList.elementAt(i).ID){
+                favoriteButton.setText("Remove from Favorite");
+                break;
+            }else
+                favoriteButton.setText("Add to Favorite");
+
+        }
     }
 
     public String calculateWaitTime(int position){
@@ -186,6 +207,7 @@ public class OrganizationActivity extends AppCompatActivity {
         if(validate){
             Toast.makeText(getApplicationContext(), "Queue successful.", Toast.LENGTH_SHORT).show();
             trackQueue.add(trackData);
+            historyList.add(organizationList.elementAt(organization_index));
 
             // increment q number
             organizationList.elementAt(organization_index).qNumber++;
@@ -204,4 +226,32 @@ public class OrganizationActivity extends AppCompatActivity {
         refresh();
     }
 
+    public void addOrRemoveFromFavoriteButton(View view){
+        boolean isAdd = false;
+        int falseAt = 0;
+        if(favoriteList.size() == 0){
+            isAdd = true;
+        }else {
+            int size = favoriteList.size();
+            for (int i = 0; i < size; i++) {
+                if (organization_index == favoriteList.elementAt(i).ID) {
+                    isAdd = false;
+                    falseAt = i;
+                    break;
+                } else {
+                    isAdd = true;
+                }
+            }
+        }
+
+        if(isAdd){
+            favoriteList.add(organizationList.elementAt(organization_index)); // add
+            Toast.makeText(getApplicationContext(), "You have added this organization into your favorite list.", Toast.LENGTH_SHORT).show();
+            favoriteButton.setText("Remove from Favorite");
+        }else{
+            favoriteList.remove(favoriteList.elementAt(falseAt)); // remove
+            Toast.makeText(getApplicationContext(), "You have removed this organization into your favorite list.", Toast.LENGTH_SHORT).show();
+            favoriteButton.setText("Add to Favorite");
+        }
+    }
 }

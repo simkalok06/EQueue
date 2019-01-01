@@ -11,30 +11,27 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import static my.edu.tarc.e_queue.Home.favoriteList;
 import static my.edu.tarc.e_queue.Home.historyList;
-import static my.edu.tarc.e_queue.Home.organizationList;
-import static my.edu.tarc.e_queue.Home.trackQueue;
 
-public class TrackYourQ extends AppCompatActivity {
-
-    public  ListView listViewYourQ;
+public class Favorite extends AppCompatActivity {
+    public ListView listViewFavorite;
     private OrganizationAdapter adapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_track_your_q);
+        setContentView(R.layout.activity_favorite);
 
-        listViewYourQ = findViewById(R.id.listView2);
+        listViewFavorite = findViewById(R.id.listViewFavorite);
         adapter = new OrganizationAdapter();
-        listViewYourQ.setAdapter(adapter);
+        listViewFavorite.setAdapter(adapter);
 
-        listViewYourQ.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listViewFavorite.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //go to queue activity
-                openQueueactivity(position);
+                openOrganizationactivity(position);
             }
         });
     }
@@ -42,13 +39,13 @@ public class TrackYourQ extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        listViewYourQ.setAdapter(adapter);
+        listViewFavorite.setAdapter(adapter);
     }
 
-    public void openQueueactivity(int position){
+    public void openOrganizationactivity(int position){
         Bundle queueExtras = new Bundle();
-        queueExtras.putInt("index", position);
-        Intent intent = new Intent(this, QueueActivity.class);
+        queueExtras.putInt("ORGANIZATION_ID", favoriteList.elementAt(position).ID);
+        Intent intent = new Intent(this, OrganizationActivity.class);
         intent.putExtras(queueExtras);
         startActivity(intent);
     }
@@ -57,7 +54,7 @@ public class TrackYourQ extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return Home.trackQueue.size();
+            return Home.favoriteList.size();
         }
 
         @Override
@@ -80,11 +77,11 @@ public class TrackYourQ extends AppCompatActivity {
             TextView textViewDescription = view.findViewById(R.id.textViewDescriptionData);
             ImageView imageView = view.findViewById(R.id.locationImageView);
 
-            textViewName.setText(Home.trackQueue.elementAt(position).organization.name);
-            textViewPhone.setText(Home.trackQueue.elementAt(position).organization.phone);
-            textViewAddress.setText(Home.trackQueue.elementAt(position).organization.address);
-            textViewDescription.setText(Home.trackQueue.elementAt(position).organization.description);
-            imageView.setImageResource(Home.images[Home.trackQueue.elementAt(position).organization.ID]);
+            textViewName.setText(Home.favoriteList.elementAt(position).name);
+            textViewPhone.setText(Home.favoriteList.elementAt(position).phone);
+            textViewAddress.setText(Home.favoriteList.elementAt(position).address);
+            textViewDescription.setText(Home.favoriteList.elementAt(position).description);
+            imageView.setImageResource(Home.images[Home.favoriteList.elementAt(position).ID]);
 
             return view;
         }
