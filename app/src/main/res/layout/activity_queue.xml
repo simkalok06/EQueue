@@ -107,9 +107,9 @@
         app:layout_constraintTop_toBottomOf="@+id/textViewQueued2" />
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/imageViewQR"
+        android:layout_width="249dp"
+        android:layout_height="210dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"

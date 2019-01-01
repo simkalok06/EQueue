@@ -1,6 +1,5 @@
 package my.edu.tarc.e_queue;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,7 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +18,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Queue;
-
-import static my.edu.tarc.e_queue.Home.listViewOrganization;
 import static my.edu.tarc.e_queue.Home.organizationList;
 import static my.edu.tarc.e_queue.Home.trackQueue;
 
@@ -31,12 +27,13 @@ public class QueueActivity extends AppCompatActivity {
     private TextView TextViewWaitTime2;
     private TextView TextViewQueued2;
     private TextView TextViewQPosition;
+    private ImageView qrCode;
 
     // variables
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
     private String GET_URL2 = "https://bait2073equeue.000webhostapp.com/update_queue.php";
     private ProgressDialog  progressDialog;
-    int organization_index;
+    int queueIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +44,17 @@ public class QueueActivity extends AppCompatActivity {
         TextViewWaitTime2 = findViewById(R.id.textViewWaitTime2);
         TextViewQueued2 = findViewById(R.id.textViewQueued2);
         TextViewQPosition = findViewById(R.id.textViewQPosition);
+        qrCode = findViewById(R.id.imageViewQR);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        organization_index = extras.getInt("ORGANIZATION_ID");
+        queueIndex = extras.getInt("index");
 
-        TextViewOrganizationName2.setText(organizationList.elementAt(organization_index).name);
-        TextViewQueued2.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
-        TextViewWaitTime2.setText(calculateWaitTime(organization_index));
-        TextViewQueued2.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
+        TextViewOrganizationName2.setText(trackQueue.elementAt(queueIndex).organization.name);
+        TextViewQueued2.setText(Integer.toString(trackQueue.elementAt(queueIndex).organization.qNumber));
+        TextViewWaitTime2.setText(calculateWaitTime(trackQueue.elementAt(queueIndex).organization.ID));
+        TextViewQPosition.setText(Integer.toString(trackQueue.elementAt(queueIndex).myQNumber));
+        qrCode.setImageResource(R.drawable.qr);
     }
 
     public String calculateWaitTime(int position){
@@ -97,9 +96,9 @@ public class QueueActivity extends AppCompatActivity {
                             }
                             progressDialog.dismiss();
 
-                            TextViewWaitTime2.setText(calculateWaitTime(organization_index));
-                            TextViewQueued2.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
-                            //listViewOrganization.setAdapter(adapter);
+                            // update number of people queuing and wait time to latest
+                            TextViewWaitTime2.setText(calculateWaitTime(trackQueue.elementAt(queueIndex).organization.ID));
+                            TextViewQueued2.setText(Integer.toString(organizationList.elementAt(trackQueue.elementAt(queueIndex).organization.ID).qNumber));
 
                         } catch (Exception e) {
                             Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -156,10 +155,10 @@ public class QueueActivity extends AppCompatActivity {
     }
 
     public void cancelButton(View view){
-        organizationList.elementAt(organization_index).qNumber--;
-        updateQueueNumber(organization_index);
+        organizationList.elementAt(trackQueue.elementAt(queueIndex).organization.ID).qNumber--;
+        updateQueueNumber(trackQueue.elementAt(queueIndex).organization.ID);
         for(int i = 0; i<trackQueue.size();i++){
-            if(trackQueue.elementAt(i).position == organization_index){
+            if(trackQueue.elementAt(i).organization.ID == trackQueue.elementAt(queueIndex).organization.ID){
                 trackQueue.remove(i);
             }
         }

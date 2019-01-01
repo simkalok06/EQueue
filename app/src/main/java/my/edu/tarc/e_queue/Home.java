@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -152,7 +153,8 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_trackQueue) {
-
+            Intent intent = new Intent(this, TrackYourQ.class);
+            startActivity(intent);
         } else if (id == R.id.nav_history) {
 
         } else if (id == R.id.nav_favorite) {
@@ -241,16 +243,17 @@ public class Home extends AppCompatActivity
         public View getView(int position, View view, ViewGroup parent) {
             view = getLayoutInflater().inflate(R.layout.outlet_record,null);
 
-            //ImageView imageViewLocation = view.findViewById(R.id.locationImageView);
             TextView textViewName = view.findViewById(R.id.textViewNameData);
             TextView textViewPhone = view.findViewById(R.id.textViewPhoneData);
             TextView textViewAddress = view.findViewById(R.id.textViewAddressData);
             TextView textViewDescription = view.findViewById(R.id.textViewDescriptionData);
+            ImageView imageView = view.findViewById(R.id.locationImageView);
 
             textViewName.setText(organizationList.elementAt(position).name);
             textViewPhone.setText(organizationList.elementAt(position).phone);
             textViewAddress.setText(organizationList.elementAt(position).address);
             textViewDescription.setText(organizationList.elementAt(position).description);
+            imageView.setImageResource(images[position]);
 
             return view;
         }

@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,7 @@ public class OrganizationActivity extends AppCompatActivity {
     private TextView TextViewOrganizationAddress;
     private TextView TextViewWaitTime;
     private TextView TextViewQueued;
-    private Button ButtonQueue;
+    private ImageView imageView;
 
     // variables
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
@@ -55,7 +56,7 @@ public class OrganizationActivity extends AppCompatActivity {
         TextViewOrganizationAddress = findViewById(R.id.textViewOrganizationAddress);
         TextViewWaitTime = findViewById(R.id.textViewWaitTime);
         TextViewQueued = findViewById(R.id.textViewQueued);
-        ButtonQueue = findViewById(R.id.buttonQueue);
+        imageView = findViewById(R.id.imageView2);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         //show appropriate organization info based on which item user pressed
@@ -69,6 +70,7 @@ public class OrganizationActivity extends AppCompatActivity {
         TextViewOrganizationAddress.setText(organizationList.elementAt(organization_index).address);
         TextViewWaitTime.setText(calculateWaitTime(organization_index));
         TextViewQueued.setText(Integer.toString(organizationList.elementAt(organization_index).qNumber));
+        imageView.setImageResource(Home.images[organization_index]);
     }
 
     @Override
@@ -173,10 +175,10 @@ public class OrganizationActivity extends AppCompatActivity {
     }
 
     public void openQueueActivity(View view) {
-        TrackQueueData trackData = new TrackQueueData(organization_index, organizationList.elementAt(organization_index).qNumber+1);
+        TrackQueueData trackData = new TrackQueueData(organizationList.elementAt(organization_index), organizationList.elementAt(organization_index).qNumber+1);
         boolean validate = true;
         for(int i = 0; i < trackQueue.size();i++){
-            if(trackQueue.elementAt(i).position == organization_index){
+            if(trackQueue.elementAt(i).organization.ID == organization_index){
                 Toast.makeText(getApplicationContext(), "You are already queuing for this!", Toast.LENGTH_SHORT).show();
                 validate = false;
             }
@@ -191,7 +193,7 @@ public class OrganizationActivity extends AppCompatActivity {
 
             // call queue activity
             Bundle queueExtras = new Bundle();
-            queueExtras.putInt("ORGANIZATION_ID", organization_index);
+            queueExtras.putInt("index", trackQueue.size()-1);
             Intent intent2 = new Intent(this, QueueActivity.class);
             intent2.putExtras(queueExtras);
             startActivity(intent2);
