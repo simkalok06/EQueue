@@ -57,7 +57,7 @@ public class Register extends AppCompatActivity {
 
                 // invalid registration
                 if(registerStatus != 0){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Register.this);
 
                     builder.setCancelable(true);
                     builder.setTitle("Invalid Registration!");
@@ -76,6 +76,7 @@ public class Register extends AppCompatActivity {
                         public void onClick(DialogInterface dialogInterface, int i) { dialogInterface.cancel();
                         }
                     });
+
                     builder.show();
                 }else{
                     progressDialog = new ProgressDialog(Register.this);
