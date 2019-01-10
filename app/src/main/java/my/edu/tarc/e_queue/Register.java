@@ -155,7 +155,7 @@ public class Register extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
+                } //end of writing
             }
         });
     }

@@ -12,7 +12,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import static my.edu.tarc.e_queue.Home.favoriteList;
-import static my.edu.tarc.e_queue.Home.historyList;
 
 public class Favorite extends AppCompatActivity {
     public ListView listViewFavorite;
@@ -72,8 +71,8 @@ public class Favorite extends AppCompatActivity {
             view = getLayoutInflater().inflate(R.layout.outlet_record,null);
 
             TextView textViewName = view.findViewById(R.id.textViewNameData);
-            TextView textViewPhone = view.findViewById(R.id.textViewPhoneData);
-            TextView textViewAddress = view.findViewById(R.id.textViewAddressData);
+            TextView textViewPhone = view.findViewById(R.id.textViewPhoneDataH);
+            TextView textViewAddress = view.findViewById(R.id.textViewAddressDataH);
             TextView textViewDescription = view.findViewById(R.id.textViewDescriptionData);
             ImageView imageView = view.findViewById(R.id.locationImageView);
 

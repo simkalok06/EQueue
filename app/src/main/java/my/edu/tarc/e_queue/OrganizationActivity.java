@@ -16,14 +16,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+import java.text.SimpleDateFormat;
+
 import static my.edu.tarc.e_queue.Home.favoriteList;
+import static my.edu.tarc.e_queue.Home.finalUsername;
 import static my.edu.tarc.e_queue.Home.historyList;
 import static my.edu.tarc.e_queue.Home.listViewOrganization;
 import static my.edu.tarc.e_queue.Home.organizationList;
@@ -40,11 +50,17 @@ public class OrganizationActivity extends AppCompatActivity {
     private TextView TextViewQueued;
     private ImageView imageView;
     private Button favoriteButton;
+    private Button queueButton;
 
     // variables
     private String GET_URL = "https://bait2073equeue.000webhostapp.com/select_organization.php";
     private String GET_URL2 = "https://bait2073equeue.000webhostapp.com/update_queue.php";
+    private String URL_SAVE = "https://bait2073equeue.000webhostapp.com/insert_history.php";
     private ProgressDialog  progressDialog;
+    private Timestamp currentTime;
+    private String organisationID;
+    private String currentTimes;
+    private boolean validate;
     int organization_index;
 
 
@@ -61,6 +77,7 @@ public class OrganizationActivity extends AppCompatActivity {
         TextViewQueued = findViewById(R.id.textViewQueued);
         imageView = findViewById(R.id.imageView2);
         favoriteButton = findViewById(R.id.buttonFavorite);
+        queueButton = findViewById(R.id.buttonQueue);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -78,6 +95,78 @@ public class OrganizationActivity extends AppCompatActivity {
         imageView.setImageResource(Home.images[organization_index]);
 
         updateFavoriteButton();
+
+        queueButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                openQueueActivity();
+                if(validate){
+                    organisationID = Integer.toString(organization_index);
+                    currentTime = new Timestamp(System.currentTimeMillis());
+                    currentTimes = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currentTime);
+
+
+                    progressDialog = new ProgressDialog(OrganizationActivity.this);
+                    progressDialog.setMessage("Loading..."); // Setting Message
+                    progressDialog.setTitle("History writing"); // Setting Title
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+                    progressDialog.show(); // Display Progress Dialog
+                    progressDialog.setCancelable(false);
+
+
+                    // write data into server
+                    try {
+                        StringRequest postRequest = new StringRequest(Request.Method.POST, URL_SAVE, new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                JSONObject jsonObject;
+                                try {
+                                    jsonObject = new JSONObject(response);
+                                    int success = jsonObject.getInt("success");
+                                    String message = jsonObject.getString("message");
+
+
+                                    // stop the process dialog
+                                    progressDialog.dismiss();
+
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Toast.makeText(getApplicationContext(), "Error: " + error.toString(), Toast.LENGTH_LONG).show();
+                                    }
+                                }) {
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> params;
+                                params = new HashMap<>();
+                                params.put("OrganisationID", organisationID);
+                                params.put("QueueTime", currentTimes);
+                                params.put("AccountID", finalUsername);
+                                return params;
+                            }
+
+                            @Override
+                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("Content-Type", "application/x-www-form-urlencoded");
+                                return params;
+                            }
+
+
+                        };
+                        NetworkCalls.getInstance().addToRequestQueue(postRequest);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -195,9 +284,9 @@ public class OrganizationActivity extends AppCompatActivity {
         NetworkCalls.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 
-    public void openQueueActivity(View view) {
+    public void openQueueActivity() {
         TrackQueueData trackData = new TrackQueueData(organizationList.elementAt(organization_index), organizationList.elementAt(organization_index).qNumber+1);
-        boolean validate = true;
+        validate = true;
         for(int i = 0; i < trackQueue.size();i++){
             if(trackQueue.elementAt(i).organization.ID == organization_index){
                 Toast.makeText(getApplicationContext(), "You are already queuing for this!", Toast.LENGTH_SHORT).show();
@@ -207,11 +296,12 @@ public class OrganizationActivity extends AppCompatActivity {
         if(validate){
             Toast.makeText(getApplicationContext(), "Queue successful.", Toast.LENGTH_SHORT).show();
             trackQueue.add(trackData);
-            historyList.add(organizationList.elementAt(organization_index));
+            //historyList.add(organizationList.elementAt(organization_index));
 
             // increment q number
             organizationList.elementAt(organization_index).qNumber++;
             updateQueueNumber(organization_index);
+
 
             // call queue activity
             Bundle queueExtras = new Bundle();
@@ -254,4 +344,6 @@ public class OrganizationActivity extends AppCompatActivity {
             favoriteButton.setText("Add to Favorite");
         }
     }
+
+
 }

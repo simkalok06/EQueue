@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+
     <ImageView
-        android:id="@+id/locationImageView"
+        android:id="@+id/imageView3"
         android:layout_width="94dp"
         android:layout_height="94dp"
         android:layout_marginStart="8dp"
@@ -15,8 +16,14 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:color/transparent" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="201dp" />
 
     <TextView
         android:id="@+id/textViewName"
@@ -26,7 +33,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/name"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/textViewNameDataH"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -37,7 +44,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/phone"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/textViewName" />
 
     <TextView
@@ -48,39 +55,27 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/address"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/textViewPhone" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline"
+    <TextView
+        android:id="@+id/textViewBookingTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="169dp" />
-
-    <TextView
-        android:id="@+id/textViewDescriptionData"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="4dp"
-        android:text="@string/description"
+        android:text="@string/booking_time"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/locationImageView"
-        app:layout_constraintTop_toBottomOf="@+id/textViewAddress" />
+        app:layout_constraintEnd_toStartOf="@+id/guideline2" />
 
     <TextView
-        android:id="@+id/textViewNameData"
+        android:id="@+id/textViewNameDataH"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/no_record"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -89,8 +84,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/no_record"
-        app:layout_constraintStart_toEndOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/textViewNameData" />
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/textViewNameDataH" />
 
     <TextView
         android:id="@+id/textViewAddressDataH"
@@ -98,7 +93,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="@string/no_record"
-        app:layout_constraintStart_toEndOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toBottomOf="@+id/textViewPhoneDataH" />
 
+    <TextView
+        android:id="@+id/textViewTimeDataH"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="@string/no_record"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline2" />
 </android.support.constraint.ConstraintLayout>

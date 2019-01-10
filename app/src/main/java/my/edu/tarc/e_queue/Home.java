@@ -1,13 +1,10 @@
 package my.edu.tarc.e_queue;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -51,7 +48,7 @@ public class Home extends AppCompatActivity
     public static int[] images = {R.drawable.dentist, R.drawable.massage, R.drawable.bank};
     public static Vector<Organization> organizationList = new Vector<Organization>();
     public static Vector<TrackQueueData> trackQueue = new Vector<TrackQueueData>();
-    public static Vector<Organization> historyList = new Vector<Organization>();
+    public static Vector<HistoryData> historyList = new Vector<HistoryData>();
     public static Vector<Organization> favoriteList = new Vector<Organization>();
 
     @Override
@@ -245,8 +242,8 @@ public class Home extends AppCompatActivity
             view = getLayoutInflater().inflate(R.layout.outlet_record,null);
 
             TextView textViewName = view.findViewById(R.id.textViewNameData);
-            TextView textViewPhone = view.findViewById(R.id.textViewPhoneData);
-            TextView textViewAddress = view.findViewById(R.id.textViewAddressData);
+            TextView textViewPhone = view.findViewById(R.id.textViewPhoneDataH);
+            TextView textViewAddress = view.findViewById(R.id.textViewAddressDataH);
             TextView textViewDescription = view.findViewById(R.id.textViewDescriptionData);
             ImageView imageView = view.findViewById(R.id.locationImageView);
 
