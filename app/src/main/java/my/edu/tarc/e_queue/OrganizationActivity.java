@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -345,5 +346,51 @@ public class OrganizationActivity extends AppCompatActivity {
         }
     }
 
+    public void openMap(View view) {
+        Uri gmmIntentUri;
+        if(organization_index == 0)
+        {
+            gmmIntentUri = Uri.parse("geo:3.101257, 101.741692?q=" + Uri.encode("Klinik Yap & Looi"));
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            }
+        }
+        else if(organization_index == 1)
+        {
+            gmmIntentUri = Uri.parse("geo:1.342795, 103.776483?q=" + Uri.encode("Yong Kang Reflexology Centre"));
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            }
+        }
+        else if(organization_index == 2)
+        {
+            gmmIntentUri = Uri.parse("geo:3.092730, 101.740615?q=" + Uri.encode("CIMB Bank Taman Mutiara"));
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            }
+        }
+    }
 
+    public void openPhone(View view){
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+        // Set the data for the intent as the phone number.
+        String phoneNum = Home.organizationList.elementAt(organization_index).phone.toString();
+
+        dialIntent.setData(Uri.parse("tel:" + phoneNum));
+        // If package resolves to an app, send intent.
+        if (dialIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(dialIntent);
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Can't resolve app for ACTION_DIAL Intent.",
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
 }
